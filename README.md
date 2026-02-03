@@ -7,7 +7,7 @@ Solder joint defects (voids/cracks) reduce reliability in semiconductor and PCB 
 
 ## What is included
 - `inspect_dataset.ipynb`: data inspection, CSV parsing, and label creation.
-- `train_model.ipynb`: baseline training (224x224 CNN, panel-level split).
+- `train_baseline.ipynb`: baseline training (224x224 CNN, panel-level split).
 - `extract_pdf.py`: helper to extract text from the reference paper.
 
 ## Dataset
@@ -33,7 +33,7 @@ python -m ipykernel install --user --name soldercracks --display-name "Python (s
 ```
 3) Run notebooks in order:
 - `inspect_dataset.ipynb`
-- `train_model.ipynb`
+- `train_baseline.ipynb`
 
 ## Baseline approach
 1) Read `Xray Void Ratio.csv` and convert `Void rate` to numeric.
@@ -53,3 +53,8 @@ Example run: ~0.75 test accuracy (will vary by split and threshold).
 
 ## Notes
 Large datasets, environments, and reference PDFs are excluded via `.gitignore`.
+
+
+## Notebooks
+- `train_baseline.ipynb` ? baseline CNN training
+- `train_mobilenet.ipynb` ? MobileNetV2 transfer learning
