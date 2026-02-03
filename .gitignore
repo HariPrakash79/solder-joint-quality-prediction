@@ -1,0 +1,23 @@
+# Environments
+.venv/
+conda/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Dataset folders
+XRay/
+SAM/
+TTA/
+TTA-Raw/
+CrackVoid Ratios/
+*.zip
+
+# Reference files (optional)
+Paper reference.pdf
+Paper reference.txt
+paper_reference.txt
+
+# OS files
+.DS_Store
+Thumbs.db
