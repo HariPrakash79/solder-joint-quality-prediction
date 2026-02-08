@@ -62,8 +62,8 @@ MobileNetV2 (fine-tuned):
 | Model | Label threshold | Decision threshold | Test accuracy | Defect recall | Notes |
 |---|---|---|---|---|---|
 | Baseline CNN | 0.04 | 0.50 | ~0.77 | ~0.68 | Mild overfitting, stable pipeline |
-| MobileNetV2 (fine?tuned + class weights) | 0.04 | 0.50 | ~0.78 | ~0.53 | Default cutoff misses defects |
-| MobileNetV2 (fine?tuned + class weights) | 0.04 | 0.165 | ~0.80 | ~0.95 | Threshold tuned for defect recall |
+| MobileNetV2 (fine tuned + class weights) | 0.04 | 0.50 | ~0.78 | ~0.53 | Default cutoff misses defects |
+| MobileNetV2 (fine tuned + class weights) | 0.04 | 0.165 | ~0.80 | ~0.95 | Threshold tuned for defect recall |
 
 Notes:
 - **Label threshold** defines defect in the CSV (`void_rate >= 0.04`).
