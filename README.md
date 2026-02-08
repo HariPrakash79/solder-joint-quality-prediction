@@ -58,6 +58,18 @@ MobileNetV2 (fine-tuned):
 - Test accuracy: ~0.77 at default threshold 0.5
 - With decision threshold ~0.127, defect recall improves to ~0.95 (more false alarms)
 
+## Results snapshot (latest run)
+| Model | Label threshold | Decision threshold | Test accuracy | Defect recall | Notes |
+|---|---|---|---|---|---|
+| Baseline CNN | 0.04 | 0.50 | ~0.77 | ~0.68 | Mild overfitting, stable pipeline |
+| MobileNetV2 (fine?tuned + class weights) | 0.04 | 0.50 | ~0.78 | ~0.53 | Default cutoff misses defects |
+| MobileNetV2 (fine?tuned + class weights) | 0.04 | 0.165 | ~0.80 | ~0.95 | Threshold tuned for defect recall |
+
+Notes:
+- **Label threshold** defines defect in the CSV (`void_rate >= 0.04`).
+- **Decision threshold** is the probability cutoff for predictions.
+
+
 ## Next steps
 - Tune decision threshold for target recall/precision tradeoff.
 - Try class weights to increase defect recall without moving threshold too low.
@@ -65,5 +77,7 @@ MobileNetV2 (fine-tuned):
 - Add explainability (Grad-CAM).
 - Multi-modal learning: combine XRay + SAM + TTA.
 
+- Build a regression model with EfficientNet (predict void rate directly).
+- Compare regression thresholded accuracy vs classification models.
 ## Notes
 Large datasets, environments, and reference PDFs are excluded via `.gitignore`.
