@@ -47,6 +47,11 @@ def main():
     model_url = cfg.get("model_url")
     img_size = int(cfg["img_size"])
     thr = float(cfg["decision_threshold"])
+    review_low = cfg.get("review_low")
+    review_high = cfg.get("review_high")
+    if review_low is None or review_high is None:
+        review_low = max(0.0, thr * 0.6)
+        review_high = min(1.0, thr * 1.4)
     class_names = cfg["class_names"]
 
     resolved = ensure_model(model_path, model_url)
@@ -63,10 +68,17 @@ def main():
         st.image(img, caption="Input image", use_container_width=True)
         x = preprocess_image(img, img_size)
         prob = float(model.predict(x, verbose=0).ravel()[0])
-        label = class_names[1] if prob >= thr else class_names[0]
+        if prob >= review_high:
+            label = class_names[1]
+        elif prob <= review_low:
+            label = class_names[0]
+        else:
+            label = "Review"
         st.metric("Defect probability", f"{prob:.3f}")
         st.metric("Prediction", label)
-        st.caption(f"Decision threshold = {thr}")
+        st.caption(f"Decision threshold = {thr} | Review band = {review_low:.3f}–{review_high:.3f}")
+        if label == "Review":
+            st.warning("Model is uncertain. Recommend manual review for this image.")
 
 
 if __name__ == "__main__":
