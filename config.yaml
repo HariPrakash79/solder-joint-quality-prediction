@@ -1,0 +1,5 @@
+model_path: models/mobilenet_v2_finetuned.keras
+model_url: ""
+img_size: 224
+decision_threshold: 0.165
+class_names: ["Normal", "Defect"]
