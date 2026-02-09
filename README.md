@@ -1,6 +1,6 @@
-# Solder Joint Quality Prediction (XRay Baseline + MobileNet + Regression)
+# Solder Joint Quality Prediction (XRay Baseline + MobileNet + Regression + Demo)
 
-Baseline ML pipeline to classify solder joint quality from XRay images using the HellaStudy-of-LEDs dataset. The goal is to turn measured void‑rate data into defect labels and train image models that can scale inspection in manufacturing.
+Baseline ML pipeline to classify solder joint quality from XRay images using the HellaStudy-of-LEDs dataset. The goal is to turn measured void-rate data into defect labels and train image models that can scale inspection in manufacturing.
 
 ## Why this matters
 Solder joint defects (voids/cracks) reduce reliability in semiconductor and PCB products and can lead to costly field failures. Automated inspection helps improve yield, reduce rework, and standardize quality control.
@@ -10,6 +10,9 @@ Solder joint defects (voids/cracks) reduce reliability in semiconductor and PCB 
 - `train_baseline.ipynb`: baseline CNN training (224x224, panel-level split).
 - `train_mobilenet.ipynb`: MobileNetV2 transfer learning + fine-tuning.
 - `train_regression_efficientnet.ipynb`: EfficientNetV2 regression (predict void rate, then threshold).
+- `app.py`: Streamlit demo app (single-image inference).
+- `config.yaml`: demo configuration (model path + thresholds).
+- `requirements.txt`: demo dependencies.
 - `extract_pdf.py`: helper to extract text from the reference paper.
 
 ## Dataset
@@ -25,17 +28,36 @@ The key label file used in the baseline is:
 
 ## Quickstart (conda)
 1) Create environment:
-    conda create -n soldercracks python=3.10 -y
-    conda install -n soldercracks -y ipykernel pandas numpy scikit-learn tensorflow matplotlib
-
+```
+conda create -n soldercracks python=3.10 -y
+conda install -n soldercracks -y ipykernel pandas numpy scikit-learn tensorflow matplotlib
+```
 2) Register kernel:
-    python -m ipykernel install --user --name soldercracks --display-name "Python (soldercracks)"
-
+```
+python -m ipykernel install --user --name soldercracks --display-name "Python (soldercracks)"
+```
 3) Run notebooks in order:
 - `inspect_dataset.ipynb`
 - `train_baseline.ipynb`
 - `train_mobilenet.ipynb`
 - `train_regression_efficientnet.ipynb`
+
+## Demo (Streamlit)
+1) Export the trained MobileNet model from the notebook:
+```
+model.save("models/mobilenet_v2_finetuned.keras")
+```
+2) Run the app:
+```
+pip install -r requirements.txt
+streamlit run app.py
+```
+3) Adjust thresholds in `config.yaml`:
+- `decision_threshold`: defect cutoff
+- `review_low` / `review_high`: optional review band
+
+## Production note (FastAPI)
+Streamlit is great for demos. For production integration, use an API service (e.g., FastAPI) so factory systems can send images and receive predictions programmatically.
 
 ## Baseline approach
 1) Read `Xray Void Ratio.csv` and convert `Void rate` to numeric.
@@ -59,28 +81,28 @@ MobileNetV2 (fine-tuned + class weights):
 - Test accuracy: ~0.78 at default threshold 0.5
 - With decision threshold ~0.165, defect recall improves to ~0.95 (fewer missed defects)
 
-EfficientNetV2 Regression:
-- MAE ~0.0148, R² ~0.49
+EfficientNetV2 (regression):
+- MAE ~0.0148, R2 ~0.49
 - With decision threshold ~0.0218, defect recall ~0.95, precision ~0.60
 
 ## Results snapshot (latest run)
 | Model | Label threshold | Decision threshold | Test accuracy | Defect recall | Defect precision | Notes |
 |---|---|---|---|---|---|---|
-| Baseline CNN | 0.04 | 0.50 | ~0.77 | ~0.68 | — | Mild overfitting, stable pipeline |
-| MobileNetV2 (fine tuned + class weights) | 0.04 | 0.50 | ~0.78 | ~0.53 | — | Default cutoff misses defects |
-| MobileNetV2 (fine tuned + class weights) | 0.04 | 0.165 | ~0.80 | ~0.95 | ~0.68 | Threshold tuned for high recall |
-| EfficientNetV2 (regression → threshold) | 0.04 | 0.0218 | ~0.72 | ~0.95 | ~0.60 | Lower false negatives, more false alarms |
+| Baseline CNN | 0.04 | 0.50 | ~0.77 | ~0.68 | ? | Mild overfitting, stable pipeline |
+| MobileNetV2 (fine tuned + class weights) | 0.04 | 0.50 | ~0.78 | ~0.53 | ? | Default cutoff misses defects |
+| MobileNetV2 (fine tuned + class weights) | 0.04 | 0.165 | ~0.80 | ~0.95 | ~0.68 | Threshold tuned for defect recall |
+| EfficientNetV2 (regression -> threshold) | 0.04 | 0.0218 | ~0.72 | ~0.95 | ~0.60 | Lower false negatives, more false alarms |
 
 Notes:
 - **Label threshold** defines defect in the CSV (`void_rate >= 0.04`).
 - **Decision threshold** is the cutoff for predictions.
 
 ## Next steps
-- Improve precision at recall ≥ 0.95 (label cleanup, hard‑negative mining, 2‑stage pipeline).
+- Improve precision at recall >= 0.95 (label cleanup, hard-negative mining, 2-stage pipeline).
 - Compare classification vs regression with the same recall target.
-- Finalize a production demo (export model + inference script + threshold config).
-- Add explainability (Grad‑CAM).
-- Explore multi‑modal learning (XRay + SAM + TTA).
+- Finalize production demo (export model + inference script + threshold config).
+- Add explainability (Grad-CAM).
+- Explore multi-modal learning: combine XRay + SAM + TTA.
 
 ## Notes
 Large datasets, environments, and reference PDFs are excluded via `.gitignore`.
